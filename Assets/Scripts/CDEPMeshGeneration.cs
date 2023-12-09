@@ -8,8 +8,6 @@ public class CDEPMeshGeneration : MeshGeneration
     public override void Setup()
     {
         base.Setup();
-        //z is x, x is y, y is z 
-        renderer.material.SetVector("_capture_position", new Vector4(-pos[1], pos[0], -pos[2], 0f));
     }
      
     public void SetCamPos(Vector3 cameraPos)

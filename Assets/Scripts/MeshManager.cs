@@ -61,7 +61,7 @@ public class MeshManager : MonoBehaviour
                 if (i < maxMeshes)
                 {
                     meshGen.gameObject.SetActive(true);
-                    meshGen.SetCamPos(cdepCameraPosition);
+                    meshGen.SetCamPos(cdepCameraPosition - captures[i].position);
                     meshGen.SetCameraIndex(i);
                 }
                 else

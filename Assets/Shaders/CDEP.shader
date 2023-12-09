@@ -2,7 +2,7 @@ Shader "Unlit/CDEP" {
     Properties
     {
         _img_index ("image index", Float) = 0.0
-        _capture_position ("capture positon", Vector) = (0, 0, 0, 1)
+        //_capture_position ("capture positon", Vector) = (0, 0, 0, 1)
         _camera_position ("camera positon", Vector) = (0, 0, 0, 1)
         _camera_ipd ("ipd", Float) = 0.065
         _camera_focal_dist ("focal distance", Float) = 1.95
@@ -50,7 +50,7 @@ Shader "Unlit/CDEP" {
             sampler2D _Depth;
             float4 _MainTex_ST;
             float _img_index;
-            float4 _capture_position;
+            //float4 _capture_position;
             float4 _camera_position;
             float _camera_ipd;
             float _camera_focal_dist;
@@ -82,19 +82,10 @@ Shader "Unlit/CDEP" {
 
                 // Calculate projected point position (relative to projection sphere center)
                 float3 pt = SphericalToCartesian(v.uv.x * 2 * M_PI, (1 - v.uv.y) * M_PI, vertex_depth).xyz;
-                pt = pt + _capture_position.xyz;
+                //pt = pt + _capture_position.xyz;
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.uv.x = o.uv.x * -1;
 
-                /*
-                float azimuth = vertex_position.x;
-                float inclination = vertex_position.y;
-
-                float3 pt = float3(vertex_depth * cos(azimuth) * sin(inclination),
-                vertex_depth * sin(azimuth) * sin(inclination),
-                vertex_depth * cos(inclination));
-                */
-                
                 // Backproject to new ODS panorama
                 //float3 camera_spherical = float3(_WorldSpaceCameraPos.z, _WorldSpaceCameraPos.x, _WorldSpaceCameraPos.y);
                 //float3 camera_spherical = float3(0,0,0);
@@ -145,7 +136,8 @@ Shader "Unlit/CDEP" {
                 */
                 
                 // Set point position
-                float depth_hint = 0.015 * _img_index; // favor image with lower index when depth's match (index should be based on dist)
+                float depth_hint = -0.015 * _img_index; // favor image with lower index when depth's match (index should be based on dist)
+                //float depth_hint = -0.015;
                 o.vertex = float4(projected_azimuth - M_PI, projected_inclination - M_PI/2, -camera_distance - depth_hint, 1.0);
 
                 o.vertex = UnityObjectToClipPos(o.vertex);
