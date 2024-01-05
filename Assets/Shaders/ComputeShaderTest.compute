@@ -3,19 +3,14 @@
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
 RWTexture2D<float4> Result;
-Texture2DArray<float4> rendTexArray;
-SamplerState samplerRendTexArray 
-{
-    Filter = MIN_MAG_MIP_LINEAR;
-    AddressU = Wrap;
-    AddressV = Wrap;
-};
+RWTexture2DArray<float4> rendTexArray;
+SamplerState MyLinearClampSampler;
 
 [numthreads(8,8,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
     // Sample a texture from the Texture2DArray
-    float4 texelColor = rendTexArray.SampleLevel(samplerRendTexArray, float3(id.x / 256.0, id.y / 256.0, 0), 0);
+    float4 texelColor = rendTexArray.SampleLevel(MyLinearClampSampler, float3(id.x / 256.0, id.y / 256.0, 0), 0);
 
     // Use the sampled color in your shader
     Result[id.xy] = texelColor;

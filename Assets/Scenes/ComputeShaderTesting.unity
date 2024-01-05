@@ -337,6 +337,8 @@ MonoBehaviour:
   shader: {fileID: 7200000, guid: e9e7cff89ecaab44f81542a6c17dddf4, type: 3}
   rt: {fileID: 8400000, guid: b2450255cfe2ebc40a5edf26f73f0fca, type: 2}
   plane: {fileID: 39967996}
+  textures:
+  - {fileID: 2800000, guid: afa63d25243e2314c875c9f5607f227f, type: 3}
 --- !u!4 &673107759
 Transform:
   m_ObjectHideFlags: 0

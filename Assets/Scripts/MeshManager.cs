@@ -8,6 +8,8 @@ using UnityEngine;
 public class MeshManager : MonoBehaviour
 {
     public bool cdep = true;
+    public Camera cam;
+    public bool drivePosFromCam = true;
     public Vector3 cdepCameraPosition = Vector3.zero;
     public int maxMeshes = 8;
     public Texture2D[] images;
@@ -54,6 +56,10 @@ public class MeshManager : MonoBehaviour
     public void Update()
     {
         if (cdep) {
+            if (drivePosFromCam)
+            {
+                cdepCameraPosition = new Vector3(Camera.main.transform.position.z, Camera.main.transform.position.y, Camera.main.transform.position.x);
+            }
             captures = captures.OrderBy(x => Vector3.Distance(x.position, cdepCameraPosition)).ToList();
             for (int i = 0; i < captures.Count; i++)
             {

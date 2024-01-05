@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class LookScript : MonoBehaviour
 {
@@ -19,9 +20,22 @@ public class LookScript : MonoBehaviour
 
     private bool focused = false;
 
+    public Transform sphere;
+
     void Update()
     {
         Look();
+        // Camera movement
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+
+        Vector3 moveDirection = new Vector3(x, 0, z);
+        moveDirection = transform.TransformDirection(moveDirection);
+        //moveDirection = Quaternion.Euler(-90, 0, 0) * moveDirection;
+
+        Camera.main.transform.position += moveDirection * 1 * Time.deltaTime;
+
+        sphere.position = transform.position;
     }
 
     private void Look()
