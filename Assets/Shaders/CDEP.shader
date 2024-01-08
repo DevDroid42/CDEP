@@ -44,6 +44,7 @@ Shader "Unlit/CDEP" {
                 float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 uint vertexId : ID;
+                float size: PSIZE;
             };
 
             sampler2D _MainTex;
@@ -118,13 +119,14 @@ Shader "Unlit/CDEP" {
 
                 float projected_inclination = acos(img_sphere_pt.z / _camera_focal_dist);
 
-                /*
+                
                 // Set point size (1.25 seems to be a good balance between filling small holes and blurring image)
-                //gl_PointSize = 1.0;
+                o.size = 1.0;
                 float size_ratio = vertex_depth / camera_distance;
                 float size_scale = 1.1 + (0.4 - (0.16 * min(camera_distance, 2.5))); // scale ranges from 1.1 to 1.5
-                gl_PointSize = size_scale * size_ratio;
+                o.size = size_scale * size_ratio;
 
+                /*
                 // XR viewport only
                 float diag_aspect = sqrt(xr_aspect * xr_aspect + 1.0);
                 float vertical_fov = 0.5 * xr_fovy + 0.005;
