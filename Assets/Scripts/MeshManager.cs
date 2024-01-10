@@ -11,6 +11,7 @@ public class MeshManager : MonoBehaviour
     public Camera cam;
     public bool drivePosFromCam = true;
     public Vector3 cdepCameraPosition = Vector3.zero;
+    public Vector3 cdepCameraDirection = Vector3.zero;
     public int maxMeshes = 8;
     public Texture2D[] images;
     public Texture2D[] depths;
@@ -18,11 +19,13 @@ public class MeshManager : MonoBehaviour
     public String depthName;
     public int densityMultiplier = 1;
     public GameObject meshTemplate;
-//  public MeshGeneration[] meshes;
+    //  public MeshGeneration[] meshes;
+    private float aspect = 1;
     private List<Capture> captures = new List<Capture>();
 
     void Start()
     {
+        aspect = Camera.main.aspect;
         if (!(images.Length == depths.Length && depths.Length == positions.Length))
         {
             Debug.LogError("expected parrallel arrays but one length differed");
@@ -59,6 +62,19 @@ public class MeshManager : MonoBehaviour
             if (drivePosFromCam)
             {
                 cdepCameraPosition = new Vector3(Camera.main.transform.position.z, Camera.main.transform.position.y, Camera.main.transform.position.x);
+
+                float cameraPitch = -Camera.main.transform.rotation.eulerAngles.x;
+                float cameraYaw = -Camera.main.transform.rotation.eulerAngles.y;
+
+                // Create rotation quaternions
+                Quaternion rotationX = Quaternion.Euler(cameraPitch, 0, 0);
+                Quaternion rotationY = Quaternion.Euler(0, cameraYaw - 90, 0);
+
+                // Create direction vector
+                Vector3 direction = new Vector3(0, 0, -1);
+
+                // Apply transformations
+                cdepCameraDirection = rotationY * rotationX * direction;
             }
             captures = captures.OrderBy(x => Vector3.Distance(x.position, cdepCameraPosition)).ToList();
             for (int i = 0; i < captures.Count; i++)
@@ -66,8 +82,13 @@ public class MeshManager : MonoBehaviour
                 CDEPMeshGeneration meshGen = ((CDEPMeshGeneration)captures[i].meshGenScript);
                 if (i < maxMeshes)
                 {
+                    if(aspect != Camera.main.aspect)
+                    {
+                        meshGen.SetAspect(Camera.main.aspect);
+                    }
                     meshGen.gameObject.SetActive(true);
                     meshGen.SetCamPos(cdepCameraPosition - captures[i].position);
+                    meshGen.SetCamDirection(cdepCameraDirection);
                     meshGen.SetCameraIndex(i);
                 }
                 else
@@ -75,6 +96,7 @@ public class MeshManager : MonoBehaviour
                     meshGen.gameObject.SetActive(false);
                 }
             }
+            aspect = Camera.main.aspect;
         }
     }
 

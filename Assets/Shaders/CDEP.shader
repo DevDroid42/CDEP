@@ -9,7 +9,7 @@ Shader "Unlit/CDEP" {
         _camera_eye ("camera eye", Float) = -1.0
         _xr_fovy ("fov y", Float) = 75
         _xr_aspect ("aspect", Float) = 2
-        _xr_view_dir ("view direction", Float) = -1.0
+        _xr_view_dir ("view direction", Vector) = (0, 0, 0, 1)
         _MainTex ("Texture", 2D) = "white" {}
         _Depth ("Depth", 2D) = "white" {}
     }
@@ -58,7 +58,7 @@ Shader "Unlit/CDEP" {
             float _camera_eye;
             float _xr_fovy;
             float _xr_aspect;
-            float _xr_view_dir;
+            float4 _xr_view_dir;
 
             float4 SphericalToCartesian(float azimuth, float elevation, float r)
             {
@@ -126,16 +126,16 @@ Shader "Unlit/CDEP" {
                 float size_scale = 1.1 + (0.4 - (0.16 * min(camera_distance, 2.5))); // scale ranges from 1.1 to 1.5
                 o.size = size_scale * size_ratio;
 
-                /*
+                
                 // XR viewport only
-                float diag_aspect = sqrt(xr_aspect * xr_aspect + 1.0);
-                float vertical_fov = 0.5 * xr_fovy + 0.005;
+                float diag_aspect = sqrt(_xr_aspect * _xr_aspect + 1.0);
+                float vertical_fov = 0.5 * _xr_fovy + 0.005;
                 //float horizontal_fov = atan(tan(vertical_fov) * xr_aspect);
                 float diagonal_fov = atan(tan(vertical_fov) * diag_aspect);
-                vec3 point_dir = normalize(img_sphere_pt.yzx);
+                float3 point_dir = normalize(img_sphere_pt.yzx);
                 // discard point (move outside view volume) if angle between point direction and view diretion > diagonal FOV
-                projected_azimuth -= float(dot(point_dir, xr_view_dir) < cos(diagonal_fov)) * 10.0;
-                */
+                projected_azimuth -= float(dot(point_dir, _xr_view_dir * 1.01) < cos(diagonal_fov)) * 10.0;
+
                 
                 // Set point position
                 float depth_hint = -0.015 * _img_index; // favor image with lower index when depth's match (index should be based on dist)
