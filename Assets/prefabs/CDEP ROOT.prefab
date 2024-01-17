@@ -214,7 +214,8 @@ MonoBehaviour:
   cam: {fileID: 6705927596768023737}
   drivePosFromCam: 1
   cdepCameraPosition: {x: 0, y: 1.5, z: 0}
-  maxMeshes: 1
+  cdepCameraDirection: {x: 0, y: 0, z: 0}
+  maxMeshes: 8
   images:
   - {fileID: 0}
   - {fileID: 0}

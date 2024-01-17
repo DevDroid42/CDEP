@@ -174,10 +174,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6705927597073875534, guid: e7424ce134a1a4d46acfb0fe5ccf4157, type: 3}
-      propertyPath: maxMeshes
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 8584020824767559460, guid: e7424ce134a1a4d46acfb0fe5ccf4157, type: 3}
       propertyPath: m_Name
       value: CDEP ROOT
