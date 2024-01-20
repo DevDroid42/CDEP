@@ -8,7 +8,7 @@ float depth_hint;
 
 Texture2D<float4> image : register(t0);
 Texture2D<float4> depths : register(t1);
-RWTexture2D<uint> out_rgbd : register(u0);
+RWStructuredBuffer<uint> out_rgbd : register(u0);
 
 #define M_PI 3.1415926535897932384626433832795
 #define EPSILON 0.000001
@@ -37,7 +37,7 @@ void CDEP(uint3 global_id : SV_DispatchThreadID) {
         float norm_y = (float(global_id.y) + 0.5) / float(dims.y);
         float in_azimuth = 2.0 * M_PI * (1.0 - norm_x);
         float in_inclination = M_PI * norm_y;
-        float in_depth = depths[global_id.xy].r;
+        float in_depth = depths[float2(width - global_id.x, global_id.y)].r;
         float3 pt = float3(in_depth * cos(in_azimuth) * sin(in_inclination),
                             in_depth * sin(in_azimuth) * sin(in_inclination),
                             in_depth * cos(in_inclination));
@@ -94,9 +94,10 @@ void CDEP(uint3 global_id : SV_DispatchThreadID) {
         
         float dist_norm_l = (camera_distance_l + depth_hint) / z_max;
         uint rgbd_l = packRgb776d12(color.rgb, dist_norm_l);
+
         float dist_norm_r = (camera_distance_r + depth_hint) / z_max;
         uint rgbd_r = packRgb776d12(color.rgb, dist_norm_r);
-
+/*
         // multiple M_PI xels
         float size_ratio_l = max(round(in_depth / camera_distance_l), 1.0);
         int px_start_l = int(floor(0.5 * size_ratio_l));
@@ -107,13 +108,15 @@ void CDEP(uint3 global_id : SV_DispatchThreadID) {
                 for (int i = -px_start_l; i <= px_end_l; i++) {
                     int f_x = int(out_x_l) + i;
                     if (f_x >= 0 && f_x < int(dims.x)) {
-                        uint2 pix_idx_l = uint2(uint(f_x), (f_y) * dims.x);
-                        InterlockedMin(out_rgbd[pix_idx_l], rgbd_l);
+                        uint pix_idx_l = uint(f_x) + uint(f_y) * dims.x;
+                        //InterlockedMin(out_rgbd[pix_idx_l], rgbd_l);
+                        out_rgbd[pix_idx_l] = pix_idx_l;
                     }
                 }
             }
         }
-
+*/
+        
         // multiple M_PI xels
         float size_ratio_r = max(round(in_depth / camera_distance_r), 1.0);
         int px_start_r = int(floor(0.5 * size_ratio_r));
@@ -124,12 +127,13 @@ void CDEP(uint3 global_id : SV_DispatchThreadID) {
                 for (int i = -px_start_r; i <= px_end_r; i++) {
                     int f_x = int(out_x_r) + i;
                     if (f_x >= 0 && f_x < int(dims.x)) {
-                        uint2 pix_idx_r = uint2(uint(f_x), (f_y) * dims.x);
+                        uint pix_idx_r = uint(f_x) + uint(f_y) * dims.x;
                         InterlockedMin(out_rgbd[pix_idx_r], rgbd_r);
                     }
                 }
             }
         }
+        
     }
     
 }
