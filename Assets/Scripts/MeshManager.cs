@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using cdep;
 
 public class MeshManager : MonoBehaviour
 {
@@ -143,10 +144,3 @@ public class MeshManager : MonoBehaviour
 
 }
 
-public class Capture
-{
-    public Texture2D image;
-    public Texture2D depth;
-    public Vector3 position;
-    public MeshGeneration meshGenScript;
-}
