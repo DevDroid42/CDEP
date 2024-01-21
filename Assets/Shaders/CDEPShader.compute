@@ -24,7 +24,7 @@ float fmod(float num, float div) {
 }
 
 uint packRgb776d12(float3 rgb, float depth) {
-    uint r7 = uint(rgb.r *    127.0);
+    uint r7 = uint(rgb.r * 127.0);
     uint g7 = uint(rgb.g * 127.0);
     uint b6 = uint(rgb.b * 63.0);
     uint d12 = uint(depth * 4095.0);
