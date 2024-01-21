@@ -174,6 +174,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5391275218183831016, guid: e7424ce134a1a4d46acfb0fe5ccf4157, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: cfe0b2c1114fa734c83a025bd23b2421, type: 2}
     - target: {fileID: 8584020824767559460, guid: e7424ce134a1a4d46acfb0fe5ccf4157, type: 3}
       propertyPath: m_Name
       value: CDEP ROOT
