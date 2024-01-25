@@ -148,7 +148,7 @@ void CDEP(uint3 global_id : SV_DispatchThreadID) {
             }
         }
 
-        if (true) {
+        if (visible_r) {
             // pixel position
             uint out_x_r = uint(round(float(dims.x) * ((2.0 * M_PI) - out_azimuth_r) / (2.0 * M_PI)));
             uint out_y_r = uint(round(float(dims.y) * (out_inclination_r / M_PI))) + dims.y;

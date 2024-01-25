@@ -28,12 +28,20 @@ public class CDEPShaderDispatch : MonoBehaviour
     private int x, y;
     private List<Capture> captures;
 
+    public bool drivePosFromHead;
+    public Transform head;
+
+    public bool cullingEnabled;
+
+    public GameObject[] textureObjects;
+
     void Start()
     {
         x = (int)resolution.x;
         y = (int)resolution.y * 2;
         rtColor = new RenderTexture(x, y, 24);
         intermediateStorage = new ComputeBuffer(x * y, sizeof(uint));
+        rtColor.graphicsFormat = UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm;
         rtColor.enableRandomWrite = true;
         rtColor.Create();
 
@@ -43,8 +51,9 @@ public class CDEPShaderDispatch : MonoBehaviour
         rtDepth.enableRandomWrite = true;
         rtDepth.Create();
 
-        gameObject.GetComponent<Renderer>().material.mainTexture = rtColor;
-
+        foreach (GameObject go in textureObjects) {
+            go.GetComponent<Renderer>().material.mainTexture = rtColor;
+        }
 
         // Find the kernel IDs
         clearShaderKernelID = clearShader.FindKernel("CLEAR");
@@ -65,6 +74,9 @@ public class CDEPShaderDispatch : MonoBehaviour
         cdepShader.SetFloat("camera_focal_dist", 1f);
         cdepShader.SetFloat("z_max", 10f);
         cdepShader.SetFloat("depth_hint", 1f);
+        cdepShader.SetInt("use_xr", cullingEnabled ? 1 : 0);
+        cdepShader.SetFloat("xr_aspect", Camera.main.aspect);
+        cdepShader.SetFloat("xr_fovy", Camera.main.fieldOfView);
 
         captures = cdepResources.InitializeOdsTextures(Application.streamingAssetsPath + "/" + depthName, positions, ImagesToLoad).ToList();
 
@@ -78,14 +90,35 @@ public class CDEPShaderDispatch : MonoBehaviour
     public void Update()
     {
         clearShader.Dispatch(clearShaderKernelID, x / threadGroupSize, y / threadGroupSize, 1);
+        if (drivePosFromHead)
+        {
+            camPos = head.position;
+        }
         //so unity cam correctly maps to new space
-        Vector3 cdepCameraPosition = new Vector3(camPos.z, camPos.y, camPos.x);
+        Vector3 cdepCameraPosition = new Vector3(camPos.z, -camPos.y, camPos.x);
         captures = captures.OrderBy(x => Vector3.Distance(x.position, cdepCameraPosition)).ToList();
+
+
+        float cameraPitch = -Camera.main.transform.rotation.eulerAngles.x;
+        float cameraYaw = -Camera.main.transform.rotation.eulerAngles.y;
+
+        // Create rotation quaternions
+        Quaternion rotationX = Quaternion.Euler(cameraPitch, 0, 0);
+        Quaternion rotationY = Quaternion.Euler(0, cameraYaw - 90, 0);
+
+        // Create direction vector
+        Vector3 direction = new Vector3(0, 0, -1);
+
+        // Apply transformations
+        Vector3 cdepCameraDirection = rotationY * rotationX * direction;
+
         for (int i = 0; i < Math.Min(ImagesToLoad, captures.Count); i++)
         {
             cdepShader.SetVector("camera_position", cdepCameraPosition - captures[i].position);
+            cdepShader.SetVector("xr_view_dir", cdepCameraDirection);
             cdepShader.SetTexture(cdepKernelID, "image", captures[i].image);
             cdepShader.SetTexture(cdepKernelID, "depths", captures[i].depth);
+            cdepShader.SetFloat("depth_hint", -0.015f * i);
 
             // Dispatch the shader
             cdepShader.Dispatch(cdepKernelID, x / threadGroupSize, y / threadGroupSize, 1);
