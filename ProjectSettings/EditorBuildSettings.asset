@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/CDEPImplementation.unity
     guid: 722ed4bafeb275043b812c320ce89af0
+  - enabled: 1
+    path: Assets/Scenes/ComputeShaderTesting.unity
+    guid: 051315ae47b66b1499c49b9bd6f0b967
   m_configObjects: {}
