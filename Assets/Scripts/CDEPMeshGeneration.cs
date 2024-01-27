@@ -12,21 +12,21 @@ public class CDEPMeshGeneration : MeshGeneration
      
     public void SetCamPos(Vector3 cameraPos)
     {
-        renderer.material.SetVector("_camera_position", cameraPos);
+        meshRenderer.material.SetVector("_camera_position", cameraPos);
     }
 
     public void SetCamDirection(Vector4 cameraDir)
     {
-        renderer.material.SetVector("_xr_view_dir", cameraDir);
+        meshRenderer.material.SetVector("_xr_view_dir", cameraDir);
     }
 
     public void SetAspect(float aspectRatio)
     {
-        renderer.material.SetFloat("_xr_aspect", aspectRatio);
+        meshRenderer.material.SetFloat("_xr_aspect", aspectRatio);
     }
 
     public void SetCameraIndex(int idx)
     {
-        renderer.material.SetFloat("_img_index", idx);
+        meshRenderer.material.SetFloat("_img_index", idx);
     }
 }
