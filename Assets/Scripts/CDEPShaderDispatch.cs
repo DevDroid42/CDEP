@@ -80,7 +80,7 @@ public class CDEPShaderDispatch : MonoBehaviour
 
         //cdepResources.PrintJson(Application.streamingAssetsPath + "/" + depthName, positions, imagesToLoad);
         //captures = cdepResources.InitializeOdsTextures(Application.streamingAssetsPath + "/" + depthName, positions, imagesToLoad).ToList();
-        captures = cdepResources.InitializeOdsTextures("C:\\Users\\Droid\\Desktop\\room capture").ToList();
+        captures = cdepResources.InitializeOdsTextures(Application.streamingAssetsPath + "/room capture").ToList();
 
         cdepShader.SetBuffer(cdepKernelID, "out_rgbd", intermediateStorage);
 

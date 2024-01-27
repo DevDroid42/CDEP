@@ -90,6 +90,7 @@ namespace cdep
                 string depthImagePath = folderPath + '/' + data[i].depthPath;
                 byte[] depthBytes = File.ReadAllBytes(depthImagePath);
                 caps[i].depth = ParseDepth(depthBytes, color.width, color.height);
+                data[i].position.y *= -1;
                 caps[i].position = data[i].position;
             }
             return caps;
