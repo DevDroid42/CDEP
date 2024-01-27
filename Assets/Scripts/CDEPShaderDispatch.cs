@@ -85,7 +85,8 @@ public class CDEPShaderDispatch : MonoBehaviour
         cdepShader.SetBool("renderLeftEye", renderLeft);
         cdepShader.SetBool("renderRightEye", renderRight);
         cdepShader.SetFloat("xr_aspect", Camera.main.aspect);
-        cdepShader.SetFloat("xr_fovy", 2 * Mathf.Atan(Mathf.Tan(Camera.main.fieldOfView / 2) * Camera.main.aspect));
+        cdepShader.SetFloat("xr_fovy", Camera.main.fieldOfView * 0.89f);
+        //cdepShader.SetFloat("xr_fovy", 2 * Mathf.Atan(Mathf.Tan(Camera.main.fieldOfView / 2) * Camera.main.aspect));
 
         //cdepResources.PrintJson(Application.streamingAssetsPath + "/" + depthName, positions, imagesToLoad);
         //captures = cdepResources.InitializeOdsTextures(Application.streamingAssetsPath + "/" + depthName, positions, imagesToLoad).ToList();
