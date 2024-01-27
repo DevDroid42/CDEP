@@ -13,6 +13,8 @@ uint use_xr;
 float xr_fovy;
 float xr_aspect;
 float3 xr_view_dir;
+bool renderLeftEye;
+bool renderRightEye;
 
 Texture2D<float4> image;
 Texture2D<float4> depths;
@@ -117,7 +119,7 @@ void CDEP(uint3 global_id : SV_DispatchThreadID) {
         float dims_y = float(dims.y);
         float in_area = sphericalPixelSize(in_inclination, dims_y);
 
-        if (visible_l) {
+        if (visible_l && renderLeftEye) {
             // pixel position
             uint out_x_l = uint(round(float(dims.x) * ((2.0 * M_PI) - out_azimuth_l) / (2.0 * M_PI)));
             uint out_y_l = uint(round(float(dims.y) * (out_inclination_l / M_PI)));
@@ -148,7 +150,7 @@ void CDEP(uint3 global_id : SV_DispatchThreadID) {
             }
         }
 
-        if (visible_r) {
+        if (visible_r && renderRightEye) {
             // pixel position
             uint out_x_r = uint(round(float(dims.x) * ((2.0 * M_PI) - out_azimuth_r) / (2.0 * M_PI)));
             uint out_y_r = uint(round(float(dims.y) * (out_inclination_r / M_PI))) + dims.y;

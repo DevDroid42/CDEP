@@ -31,6 +31,8 @@ public class CDEPShaderDispatch : MonoBehaviour
     public bool drivePosFromHead;
     public Transform head;
 
+    public bool renderLeft;
+    public bool renderRight;
     public bool cullingEnabled;
 
     public GameObject[] textureObjects;
@@ -80,8 +82,10 @@ public class CDEPShaderDispatch : MonoBehaviour
         cdepShader.SetFloat("z_max", 10f);
         cdepShader.SetFloat("depth_hint", 1f);
         cdepShader.SetInt("use_xr", cullingEnabled ? 1 : 0);
+        cdepShader.SetBool("renderLeftEye", renderLeft);
+        cdepShader.SetBool("renderRightEye", renderRight);
         cdepShader.SetFloat("xr_aspect", Camera.main.aspect);
-        cdepShader.SetFloat("xr_fovy", Camera.main.fieldOfView);
+        cdepShader.SetFloat("xr_fovy", 2 * Mathf.Atan(Mathf.Tan(Camera.main.fieldOfView / 2) * Camera.main.aspect));
 
         //cdepResources.PrintJson(Application.streamingAssetsPath + "/" + depthName, positions, imagesToLoad);
         //captures = cdepResources.InitializeOdsTextures(Application.streamingAssetsPath + "/" + depthName, positions, imagesToLoad).ToList();
@@ -106,7 +110,7 @@ public class CDEPShaderDispatch : MonoBehaviour
         captures = captures.OrderBy(x => Vector3.Distance(x.position, cdepCameraPosition)).ToList();
 
 
-        float cameraPitch = -Camera.main.transform.rotation.eulerAngles.x;
+        float cameraPitch = Camera.main.transform.rotation.eulerAngles.x;
         float cameraYaw = -Camera.main.transform.rotation.eulerAngles.y;
 
         // Create rotation quaternions
