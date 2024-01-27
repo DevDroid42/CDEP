@@ -173,8 +173,8 @@ MonoBehaviour:
   cdepShader: {fileID: 7200000, guid: bb367c2b64e79b64fade390f95a48201, type: 3}
   textureGenShader: {fileID: 7200000, guid: 47b75844097021549a1d515526357121, type: 3}
   threadGroupSize: 8
-  ImagesToLoad: 5
-  ImagesToRender: 5
+  ImagesToLoad: 8
+  ImagesToRender: 8
   depthName: ods_cdep_4k_camera
   positions:
   - {x: -0.35, y: 1.85, z: 0.55}

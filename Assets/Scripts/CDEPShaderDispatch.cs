@@ -17,8 +17,8 @@ public class CDEPShaderDispatch : MonoBehaviour
     public ComputeShader textureGenShader;
     private int textureGenKernelID;
     public int threadGroupSize = 8;
-    public int ImagesToLoad = 8;
-    public int ImagesToRender = 8;
+    public int imagesToLoad = 8;
+    public int imagesToRender = 8;
     public String depthName;
     public Vector3[] positions;
     public Vector3 camPos;
@@ -78,7 +78,9 @@ public class CDEPShaderDispatch : MonoBehaviour
         cdepShader.SetFloat("xr_aspect", Camera.main.aspect);
         cdepShader.SetFloat("xr_fovy", Camera.main.fieldOfView);
 
-        captures = cdepResources.InitializeOdsTextures(Application.streamingAssetsPath + "/" + depthName, positions, ImagesToLoad).ToList();
+        //cdepResources.PrintJson(Application.streamingAssetsPath + "/" + depthName, positions, imagesToLoad);
+        //captures = cdepResources.InitializeOdsTextures(Application.streamingAssetsPath + "/" + depthName, positions, imagesToLoad).ToList();
+        captures = cdepResources.InitializeOdsTextures("C:\\Users\\Droid\\Desktop\\room capture").ToList();
 
         cdepShader.SetBuffer(cdepKernelID, "out_rgbd", intermediateStorage);
 
@@ -112,7 +114,7 @@ public class CDEPShaderDispatch : MonoBehaviour
         // Apply transformations
         Vector3 cdepCameraDirection = rotationY * rotationX * direction;
 
-        for (int i = 0; i < Math.Min(ImagesToLoad, captures.Count); i++)
+        for (int i = 0; i < Math.Min(imagesToRender, captures.Count); i++)
         {
             cdepShader.SetVector("camera_position", cdepCameraPosition - captures[i].position);
             cdepShader.SetVector("xr_view_dir", cdepCameraDirection);
