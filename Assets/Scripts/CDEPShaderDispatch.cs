@@ -34,6 +34,7 @@ public class CDEPShaderDispatch : MonoBehaviour
     public bool cullingEnabled;
 
     public GameObject[] textureObjects;
+    public GameObject[] depthObjects;
 
     void Start()
     {
@@ -53,6 +54,10 @@ public class CDEPShaderDispatch : MonoBehaviour
 
         foreach (GameObject go in textureObjects) {
             go.GetComponent<Renderer>().material.mainTexture = rtColor;
+        }
+        foreach (GameObject go in textureObjects)
+        {
+            go.GetComponent<Renderer>().material.SetTexture("_Depth", rtDepth);
         }
 
         // Find the kernel IDs
