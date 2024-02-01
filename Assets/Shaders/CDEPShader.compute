@@ -15,6 +15,8 @@ float xr_aspect;
 float3 xr_view_dir;
 bool renderLeftEye;
 bool renderRightEye;
+uint xres;
+uint yres;
 
 Texture2D<float4> image;
 Texture2D<float4> depths;
@@ -44,17 +46,13 @@ float sphericalPixelSize(float inclination, float dims_y) {
 
 [numthreads(8, 8, 1)]
 void CDEP(uint3 global_id : SV_DispatchThreadID) {
-    uint x;
-    uint y;
-    image.GetDimensions(x, y);
-    uint2 dims = uint2(x, y);
-    if (global_id.x < dims.x && global_id.y < dims.y) {
+    if (global_id.x < xres && global_id.y < yres) {
         // Calculate projected point position (relative to original projection sphere center)
-        float norm_x = (float(global_id.x) + 0.5) / float(dims.x);
-        float norm_y = (float(global_id.y) + 0.5) / float(dims.y);
+        float norm_x = (float(global_id.x) + 0.5) / float(xres);
+        float norm_y = (float(global_id.y) + 0.5) / float(yres);
         float in_azimuth = 2.0 * M_PI * (1.0 - norm_x);
         float in_inclination = M_PI * norm_y;
-        float in_depth = depths[uint2(dims.x - global_id.x, global_id.y)].r;
+        float in_depth = depths[uint2(xres - global_id.x, global_id.y)].r;
         float3 pt = float3(in_depth * cos(in_azimuth) * sin(in_inclination),
                             in_depth * sin(in_azimuth) * sin(in_inclination),
                             in_depth * cos(in_inclination));
@@ -116,13 +114,13 @@ void CDEP(uint3 global_id : SV_DispatchThreadID) {
 
         // Write pixel and depth to output textures
         float4 color = image[global_id.xy];
-        float dims_y = float(dims.y);
+        float dims_y = float(yres);
         float in_area = sphericalPixelSize(in_inclination, dims_y);
 
         if (visible_l && renderLeftEye) {
             // pixel position
-            uint out_x_l = uint(round(float(dims.x) * ((2.0 * M_PI) - out_azimuth_l) / (2.0 * M_PI)));
-            uint out_y_l = uint(round(float(dims.y) * (out_inclination_l / M_PI)));
+            uint out_x_l = uint(round(float(xres) * ((2.0 * M_PI) - out_azimuth_l) / (2.0 * M_PI)));
+            uint out_y_l = uint(round(float(yres) * (out_inclination_l / M_PI)));
 
             // pack RGB-D into uint32
             float dist_norm_l = (camera_distance_l + depth_hint) / z_max;
@@ -138,11 +136,11 @@ void CDEP(uint3 global_id : SV_DispatchThreadID) {
             int px_end_l = int(ceil(0.5 * size_ratio_l));
             for (int j = -px_start_l; j < px_end_l; j++) {
                 int f_y = int(out_y_l) + j;
-                if (f_y >= 0 && f_y < int(dims.y)) {
+                if (f_y >= 0 && f_y < int(yres)) {
                     for (int i = -px_start_l; i <= px_end_l; i++) {
                         int f_x = int(out_x_l) + i;
-                        if (f_x >= 0 && f_x < int(dims.x)) {
-                            uint pix_idx_l = uint(f_y) * dims.x  + uint(f_x);
+                        if (f_x >= 0 && f_x < int(xres)) {
+                            uint pix_idx_l = uint(f_y) * xres  + uint(f_x);
                             InterlockedMin(out_rgbd[pix_idx_l], rgbd_l);
                         }
                     }
@@ -152,8 +150,8 @@ void CDEP(uint3 global_id : SV_DispatchThreadID) {
 
         if (visible_r && renderRightEye) {
             // pixel position
-            uint out_x_r = uint(round(float(dims.x) * ((2.0 * M_PI) - out_azimuth_r) / (2.0 * M_PI)));
-            uint out_y_r = uint(round(float(dims.y) * (out_inclination_r / M_PI))) + dims.y;
+            uint out_x_r = uint(round(float(xres) * ((2.0 * M_PI) - out_azimuth_r) / (2.0 * M_PI)));
+            uint out_y_r = uint(round(float(yres) * (out_inclination_r / M_PI))) + yres;
 
             // pack RGB-D into uint32
             float dist_norm_r = (camera_distance_r + depth_hint) / z_max;
@@ -169,11 +167,11 @@ void CDEP(uint3 global_id : SV_DispatchThreadID) {
             int px_end_r = int(ceil(0.5 * size_ratio_r));
             for (int j = -px_start_r; j < px_end_r; j++) {
                 int f_y = int(out_y_r) + j;
-                if (f_y >= int(dims.y) && f_y < 2 * int(dims.y)) {
+                if (f_y >= int(yres) && f_y < 2 * int(yres)) {
                     for (int i = -px_start_r; i <= px_end_r; i++) {
                         int f_x = int(out_x_r) + i;
-                        if (f_x >= 0 && f_x < int(dims.x)) {
-                            uint pix_idx_r = uint(f_y) * dims.x  + uint(f_x);
+                        if (f_x >= 0 && f_x < int(xres)) {
+                            uint pix_idx_r = uint(f_y) * xres  + uint(f_x);
                             InterlockedMin(out_rgbd[pix_idx_r], rgbd_r);
                         }
                     }

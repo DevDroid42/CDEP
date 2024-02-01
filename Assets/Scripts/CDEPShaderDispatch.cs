@@ -6,6 +6,7 @@ using cdep;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class CDEPShaderDispatch : MonoBehaviour
 {
@@ -54,7 +55,8 @@ public class CDEPShaderDispatch : MonoBehaviour
         rtDepth.enableRandomWrite = true;
         rtDepth.Create();
 
-        foreach (GameObject go in textureObjects) {
+        foreach (GameObject go in textureObjects)
+        {
             go.GetComponent<Renderer>().material.mainTexture = rtColor;
         }
         foreach (GameObject go in textureObjects)
@@ -91,6 +93,12 @@ public class CDEPShaderDispatch : MonoBehaviour
         //cdepResources.PrintJson(Application.streamingAssetsPath + "/" + depthName, positions, imagesToLoad);
         //captures = cdepResources.InitializeOdsTextures(Application.streamingAssetsPath + "/" + depthName, positions, imagesToLoad).ToList();
         captures = cdepResources.InitializeOdsTextures(Application.streamingAssetsPath + "/room capture").ToList();
+
+        if (captures.Count > 0)
+        {
+            cdepShader.SetInt("xres", (int)captures[0].image.Size().x);
+            cdepShader.SetInt("yres", (int)captures[0].image.Size().y);
+        }
 
         cdepShader.SetBuffer(cdepKernelID, "out_rgbd", intermediateStorage);
 

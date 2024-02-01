@@ -47,7 +47,7 @@ namespace cdep
             for (int i = 0; i < count; i++)
             {
                 caps[i] = new Capture();
-                Texture2D color = new Texture2D(1, 1); //mock size 1x1
+                Texture2D color = new Texture2D(1, 1); //mock size 
                 // Load from file path and save as texture - color
                 string textureImagePath = file_name + "_" + (i + 1) + ".png";
                 byte[] bytes = File.ReadAllBytes(textureImagePath);
